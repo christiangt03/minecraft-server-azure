@@ -1,0 +1,161 @@
+#cloud-config
+package_update: true
+packages:
+  - openjdk-25-jre-headless
+  - curl
+  - jq
+  - tar
+  - gzip
+  - python3
+
+write_files:
+  - path: /etc/mc/env
+    permissions: "0640"
+    content: |
+      RCON_PASSWORD=${rcon_password}
+      RCON_PORT=${rcon_port}
+      STORAGE_ACCOUNT=${storage_account}
+      BACKUP_CONTAINER=${backup_container}
+      DISCORD_WEBHOOK=${discord_webhook}
+      IDLE_MINUTES=${idle_minutes}
+      CPU_THRESHOLD=${cpu_threshold}
+      RAM_THRESHOLD=${ram_threshold}
+      DISK_THRESHOLD=${disk_threshold}
+      MAX_PLAYERS=${max_players}
+      SERVER_NAME=${server_name}
+      MC_DIR=/opt/mc/server
+
+  - path: /opt/mc/rcon.py
+    encoding: b64
+    permissions: "0755"
+    content: ${rcon_py_b64}
+
+  - path: /opt/mc/mc-monitor.sh
+    encoding: b64
+    permissions: "0755"
+    content: ${monitor_b64}
+
+  - path: /opt/mc/mc-backup.sh
+    encoding: b64
+    permissions: "0755"
+    content: ${backup_b64}
+
+  - path: /opt/mc/mc-idle-stop.sh
+    encoding: b64
+    permissions: "0755"
+    content: ${idlestop_b64}
+
+  - path: /opt/mc/mc-crash-alert.sh
+    encoding: b64
+    permissions: "0755"
+    content: ${crashalert_b64}
+
+  - path: /opt/mc/mc-setup.sh
+    encoding: b64
+    permissions: "0755"
+    content: ${setup_b64}
+
+  - path: /etc/systemd/system/minecraft.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Minecraft (Paper + Geyser)
+      After=network-online.target
+      Wants=network-online.target
+      OnFailure=mc-crash-alert.service
+
+      [Service]
+      User=minecraft
+      WorkingDirectory=/opt/mc/server
+      EnvironmentFile=/etc/mc/env
+      ExecStart=/usr/bin/java -Xms2560M -Xmx2560M -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -jar /opt/mc/server/paper.jar nogui
+      ExecStop=/usr/bin/python3 /opt/mc/rcon.py cmd stop
+      Restart=on-failure
+      RestartSec=15
+      SuccessExitStatus=0 143
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/mc-crash-alert.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Aviso de caida de Minecraft
+
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/mc/mc-crash-alert.sh
+
+  - path: /etc/systemd/system/mc-monitor.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Monitor de CPU/RAM/disco
+
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/mc/mc-monitor.sh
+
+  - path: /etc/systemd/system/mc-monitor.timer
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Ejecuta el monitor cada 5 min
+
+      [Timer]
+      OnBootSec=3min
+      OnUnitActiveSec=5min
+
+      [Install]
+      WantedBy=timers.target
+
+  - path: /etc/systemd/system/mc-idle-stop.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Auto-apagado por inactividad
+
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/mc/mc-idle-stop.sh
+
+  - path: /etc/systemd/system/mc-idle-stop.timer
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Comprueba inactividad cada 5 min
+
+      [Timer]
+      OnBootSec=10min
+      OnUnitActiveSec=5min
+
+      [Install]
+      WantedBy=timers.target
+
+  - path: /etc/systemd/system/mc-backup.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Backup del mundo al blob
+
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/mc/mc-backup.sh
+
+  - path: /etc/systemd/system/mc-backup.timer
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Backup diario
+
+      [Timer]
+      OnCalendar=*-*-* 05:00:00
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+
+runcmd:
+  - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+  - bash /opt/mc/mc-setup.sh

@@ -1,0 +1,25 @@
+# Copia este archivo a terraform.tfvars y rellena los valores.
+# terraform.tfvars esta en .gitignore (no se sube nunca).
+
+# Tu IP publica /32 para poder entrar por SSH.
+# Detectala con:  curl -s https://api.ipify.org
+allowed_ssh_cidr = "TU.IP.PUBLICA.AQUI/32"
+
+# Etiqueta DNS unica en la region (host final: <label>.spaincentral.cloudapp.azure.com)
+dns_label = "elige-un-nombre-unico"
+
+# Email de alertas
+alert_email = "tu-email@ejemplo.com"
+
+# Webhook de Discord para alertas de CPU/RAM/disco/crash (opcional, recomendado)
+# discord_webhook_url = "https://discord.com/api/webhooks/xxxx/yyyy"
+
+# Ruta a tu clave publica SSH (generada en el paso de prerequisitos)
+ssh_public_key_path = "~/.ssh/mcserver.pub"
+
+# --- Opcionales ---
+# use_spot              = false   # true = mas barato pero puede desalojarse
+# mc_max_players        = 10
+# idle_minutes          = 20      # minutos sin jugadores antes de auto-apagar
+# backup_retention_days = 30
+# enable_start_function = false   # fase 2: boton web de arranque para amigos

@@ -1,0 +1,21 @@
+# Terraform
+terraform/.terraform/
+terraform/.build/
+*.tfstate
+*.tfstate.*
+tfplan
+crash.log
+# Variables y secretos (mantener solo los .example)
+*.tfvars
+!*.tfvars.example
+*.sas
+*.pem
+*.key
+id_mcserver*
+# Backups locales
+backups/*
+!backups/.gitkeep
+start-url.txt
+
+# Config local de Claude Code
+.claude/
