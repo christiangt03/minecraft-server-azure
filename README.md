@@ -42,6 +42,13 @@ Copia `terraform/terraform.tfvars.example` a `terraform/terraform.tfvars` y rell
 
 ## 2. Desplegar la infraestructura
 
+**Camino rápido (Windows):** ejecuta `.\deploy.ps1` en la raíz del repo. Hace todo lo anterior y esto
+solo: comprueba herramientas y sesión de Azure, genera la clave SSH y `terraform.tfvars` si faltan
+(redetectando tu IP), lanza `init` + `apply`, guarda el botón de encendido en `start-url.txt` y ofrece
+restaurar el último backup del mundo de `backups/` por SSH. Con `-SkipRestore` despliega mundo nuevo.
+
+**Camino manual:**
+
 ```bash
 cd terraform
 terraform init

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Backup del mundo: vacia buffers via RCON, comprime y sube al blob con Managed Identity.
 set -euo pipefail
-source /etc/mc/env
+# set -a: exporta las variables para los procesos hijos (rcon.py las lee de os.environ)
+set -a; source /etc/mc/env; set +a
 
 MC_DIR="${MC_DIR:-/opt/mc/server}"
 TS=$(date +%Y%m%d-%H%M%S)

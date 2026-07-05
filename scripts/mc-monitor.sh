@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Vigila CPU, RAM y disco. Si algo supera el umbral avisa por Discord (si esta configurado).
 set -euo pipefail
-source /etc/mc/env
+set -a; source /etc/mc/env; set +a
 
 notify() {
   local msg="$1"

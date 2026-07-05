@@ -65,4 +65,11 @@ resource "azurerm_linux_virtual_machine" "main" {
   custom_data = local.cloud_init
 
   tags = local.tags
+
+  lifecycle {
+    # cloud-init solo se ejecuta en el primer arranque: cambiar los scripts NO
+    # debe recrear la VM (se perderia el mundo). Los cambios en scripts se
+    # aplican a mano en la VM (o recreandola a proposito con -replace).
+    ignore_changes = [custom_data]
+  }
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Instala y configura PaperMC + Geyser + Floodgate. Lo ejecuta cloud-init en el primer arranque.
 set -euo pipefail
-source /etc/mc/env
+set -a; source /etc/mc/env; set +a
 
 MC_DIR=/opt/mc/server
 PLUGINS_DIR="$MC_DIR/plugins"

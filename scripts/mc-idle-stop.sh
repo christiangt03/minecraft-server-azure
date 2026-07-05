@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Si no hay jugadores durante IDLE_MINUTES: hace backup y auto-apaga la VM (deallocate).
 set -euo pipefail
-source /etc/mc/env
+# set -a: exporta las variables para los procesos hijos (rcon.py las lee de os.environ)
+set -a; source /etc/mc/env; set +a
 
 STATEFILE="/run/mc-empty-since"
 
