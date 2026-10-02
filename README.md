@@ -68,7 +68,7 @@ journalctl -u minecraft -f                        # log del servidor
 
 ## 3. Encender / apagar
 
-> ⚠️ **Nunca uses `az vm start` a secas**: arrancaría la VM **sin IP pública** (sin internet).
+> **Importante: nunca uses `az vm start` a secas**: arrancaría la VM **sin IP pública** (sin internet).
 > Enciende siempre con el botón web o `scripts/start.ps1`, que primero recrean la IP.
 
 - **Dueño (PC):** `./scripts/start.ps1` y `./scripts/stop.ps1`
